@@ -1,0 +1,11 @@
+<h2>Dashboard</h2>
+<p>Total Income: {{ total_income }}</p>
+<p>Total Expense: {{ total_expense }}</p>
+<p>Balance: {{ balance }}</p>
+<a href="{% url 'add_transaction' %}">Add Transaction</a>
+<hr>
+<ul>
+  {% for t in transactions %}
+    <li>{{ t.date }} - {{ t.category }} - {{ t.amount }} ({{ t.type }})</li>
+  {% endfor %}
+</ul>
