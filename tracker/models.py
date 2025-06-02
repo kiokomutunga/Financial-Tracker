@@ -8,7 +8,7 @@ class Transactions(models.Model):
     ]
     #create table / model fields to be stored in the database
     date = models.DateField(auto_now_add=True)
-    Type = models.CharField(max_length=7, choices=Type_choice)
+    Type = models.CharField(max_length=100, choices=Type_choice)
     amount = models.FloatField()
     description = models.CharField(max_length=100)
     category = models.CharField(max_length=100, blank=False)
