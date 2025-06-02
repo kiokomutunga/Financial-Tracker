@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <h2>Dashboard</h2>
 <p>Total Income: {{ total_income }}</p>
 <p>Total Expense: {{ total_expense }}</p>
@@ -9,3 +10,46 @@
     <li>{{ t.date }} - {{ t.category }} - {{ t.amount }} ({{ t.type }})</li>
   {% endfor %}
 </ul>
+<h3>Spending by Category</h3>
+<canvas id="categoryChart" width="400" height="200"></canvas>
+<script>
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    const categoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: JSON.parse('{{ chart_labels|escapejs }}'),
+            datasets: [{
+                label: 'Amount by Category',
+                data: JSON.parse('{{ chart_data|escapejs }}'),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+</script>
+{{ [total_income, total_expense]|json_script:"income_expense_data" }}
+<h3>Income vs Expense</h3>
+<canvas id="typeChart" width="400" height="200"></canvas>
+<script>
+    const pieData = JSON.parse(document.getElementById("income_expense_data").textContent);
+
+const typeChart = new Chart(document.getElementById('typeChart').getContext('2d'), {
+    type: 'pie',
+    data: {
+        labels: ['Income', 'Expense'],
+        datasets: [{
+            data: pieData,
+            backgroundColor: ['#28a745', '#dc3545']
+        }]
+    }
+});
+</script>
