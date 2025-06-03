@@ -53,3 +53,13 @@ const typeChart = new Chart(document.getElementById('typeChart').getContext('2d'
     }
 });
 </script>
+{% if budget_warnings %}
+  <div style="color: red;">
+    <h4>⚠ Budget Warnings:</h4>
+    <ul>
+      {% for warning in budget_warnings %}
+        <li>{{ warning }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
