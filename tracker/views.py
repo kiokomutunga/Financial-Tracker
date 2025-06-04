@@ -40,6 +40,7 @@ def Dashboard (request):
             'chart_labels': json.dumps(chart_labels) ,
             'chart_data': json.dumps(chart_data),
             'budget_warnings': budget_warnings,
+            'budgets': budgets,
 
         }
     )
