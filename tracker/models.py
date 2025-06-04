@@ -32,6 +32,7 @@ class Budget(models.Model):
     amount = models.FloatField()
     month = models.DateTimeField()
     year = models.DateTimeField() 
+    date = models.DateField()
 
 
     def __str__(self):

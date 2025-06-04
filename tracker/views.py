@@ -1,18 +1,31 @@
-from django.shortcuts import render , redirect
-from .models import Transactions,Budget
+from django.shortcuts import render, redirect
+from .models import Transactions, Budget
 from .forms import TransactionForm
 from collections import defaultdict
 from datetime import datetime
 import json
 
+def Dashboard(request):
+    # Get current datetime
+    now = datetime.now()
 
-def Dashboard (request):
-    transactions = Transactions.objects.all().order_by('-date')
+    # Define start and end of the current month
+    start_of_month = datetime(now.year, now.month, 1)
+    if now.month == 12:
+        end_of_month = datetime(now.year + 1, 1, 1)
+    else:
+        end_of_month = datetime(now.year, now.month + 1, 1)
+
+    # Filter transactions and budgets for current month
+    transactions = Transactions.objects.filter(date__gte=start_of_month, date__lt=end_of_month).order_by('-date')
+    budgets = Budget.objects.filter(date__gte=start_of_month, date__lt=end_of_month)
+
+    # Compute totals
     total_income = sum(t.amount for t in transactions if t.type == 'income')
     total_expense = sum(t.amount for t in transactions if t.type == 'expenses')
-    balance  = total_income - total_expense
+    balance = total_income - total_expense
 
-    #charts data
+    # Prepare chart data
     category_totals = defaultdict(float)
     for t in transactions:
         category_totals[t.category] += t.amount
@@ -20,40 +33,26 @@ def Dashboard (request):
     chart_labels = list(category_totals.keys())
     chart_data = list(category_totals.values())
 
-
-    now = datetime.now()
-    budgets = Budget.objects.filter(month=now.month, year=now.year)
+    # Budget warnings (Optional logic, you can enhance this)
     budget_warnings = []
-    for budget in budgets:
-        spent = category_totals.get(budget.category, 0)
-        if spent > budget.amount:
-            budget_warnings.append(
-                f"Overspent in {budget.category}: spent {spent}, budget was {budget.amount}"
-            )
 
-
-    return render (request, 'tracker/dashboard.html',{
-            'transactions':transactions,
-            'total_income':total_income,
-            'total_expense':total_expense,
-            'balance': balance,
-            'chart_labels': json.dumps(chart_labels) ,
-            'chart_data': json.dumps(chart_data),
-            'budget_warnings': budget_warnings,
-            'budgets': budgets,
-
-        }
-    )
+    return render(request, 'tracker/dashboard.html', {
+        'transactions': transactions,
+        'total_income': total_income,
+        'total_expense': total_expense,
+        'balance': balance,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': json.dumps(chart_data),
+        'budgets': budgets,
+        'budget_warnings': budget_warnings,
+    })
 
 def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
-            form.save() 
+            form.save()
             return redirect('dashboard')
-        else:
-            form = TransactionForm()
-            return render(request, 'tracker/add_transaction.html', {'form': form})
-        
-      
-
+    else:
+        form = TransactionForm()
+    return render(request, 'tracker/add_transaction.html', {'form': form})
