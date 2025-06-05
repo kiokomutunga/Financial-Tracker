@@ -21,9 +21,11 @@ def Dashboard(request):
     budgets = Budget.objects.filter(date__gte=start_of_month, date__lt=end_of_month)
 
     # Compute totals
-    total_income = sum(t.amount for t in transactions if t.type == 'income')
-    total_expense = sum(t.amount for t in transactions if t.type == 'expenses')
+    total_income = sum(t.amount for t in transactions if t.Type == 'income')
+    total_expense = sum(t.amount for t in transactions if t.Type == 'expenses')
     balance = total_income - total_expense
+
+    income_expense_data = [total_income, total_expense]
 
     # Prepare chart data
     category_totals = defaultdict(float)
@@ -45,6 +47,7 @@ def Dashboard(request):
         'chart_data': json.dumps(chart_data),
         'budgets': budgets,
         'budget_warnings': budget_warnings,
+        'income_expense_data':income_expense_data,
     })
 
 def add_transaction(request):
@@ -52,7 +55,7 @@ def add_transaction(request):
         form = TransactionForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('Dashboard')
     else:
         form = TransactionForm()
     return render(request, 'tracker/add_transaction.html', {'form': form})

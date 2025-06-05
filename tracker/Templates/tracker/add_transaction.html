@@ -4,4 +4,36 @@
   {{ form.as_p }}
   <button type="submit">Save</button>
 </form>
-<a href="{% url 'dashboard' %}">Back</a>
+<a href="{% url 'Dashboard' %}">Back</a>
+<script>
+    const incomeCategories = ['Salary', 'Business', 'Shares', 'Bonus', 'Other'];
+    const expenseCategories = ['Food', 'Transport', 'Housing', 'Entertainment', 'Healthcare', 'Utilities', 'Other'];
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeField = document.getElementById('id_type');
+        const categoryField = document.getElementById('id_category');
+
+        function updateCategories(selectedType) {
+            // Clear current options
+            categoryField.innerHTML = '';
+
+            const categories = selectedType === 'income' ? incomeCategories : expenseCategories;
+
+            // Add new options
+            categories.forEach(function (cat) {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categoryField.appendChild(option);
+            });
+        }
+
+        // Initial load
+        updateCategories(typeField.value);
+
+        // Change event
+        typeField.addEventListener('change', function () {
+            updateCategories(this.value);
+        });
+    });
+</script>
