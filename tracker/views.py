@@ -35,7 +35,7 @@ def Dashboard(request):
     chart_labels = list(category_totals.keys())
     chart_data = list(category_totals.values())
 
-    # Budget warnings (Optional logic, you can enhance this)
+    # Budget warnings 
     budget_warnings = []
 
     return render(request, 'tracker/dashboard.html', {
